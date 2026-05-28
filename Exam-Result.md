@@ -60,20 +60,20 @@
 
 | Feature | เหตุผลที่ทดสอบ |
 |---------|----------------|
-| Auth | |
-| Menu | |
-| Order | |
-| Payment | |
+| Auth | Login/Logout, JWT |
+| Menu | CRUD + Role-based access |
+| Order | Open/Add Items/Confirm/Cancel |
+| Payment | Cash/Card/QR |
 | Report | |
 | Security | |
 
 #### Out of Scope
 **✏️ ระบุสิ่งที่ไม่ทดสอบและเหตุผล อย่างน้อย 1 รายการ**
-
+ระบบจัดการสต๊อกวัตถุดิบ (Inventory/Stock Management), การเชื่อมต่อระบบ Delivery ภายนอก
 | Feature / ขอบเขตที่ไม่ทดสอบ | เหตุผล |
 |-----------------------------|--------|
-| | |
-| | |
+| ระบบจัดการสต๊อกวัตถุดิบ (Inventory/Stock Management) | ขอบเขตของการทดสอบในเฟสนี้เน้นที่ระบบหน้าร้านเป็นหลัก (เมนู, ออเดอร์, ชำระเงิน) ยังไม่ครอบคลุมการคำนวณและตัดสต๊อกหลังบ้าน |
+| การเชื่อมต่อระบบ Delivery ภายนอก | ปัจจุบันระบบรองรับเฉพาะออเดอร์ทานที่ร้าน (Dine-in) และซื้อกลับบ้าน (Takeaway) ยังไม่มีการเชื่อมต่อ API กับแพลตฟอร์ม Delivery อื่นๆ |
 
 ---
 
@@ -83,11 +83,11 @@
 
 | ประเภทการทดสอบ | เครื่องมือ | รายละเอียด |
 |----------------|-----------|------------|
-| Unit Testing | Vitest | |
-| API Testing (E2E) | Postman / Newman | |
-| Security Testing | npm audit | |
-| Smoke Testing | Manual | |
-| Staging Test | Docker Compose | |
+| Unit Testing | Vitest | ทดสอบความถูกต้องของ Business Logic ย่อย ๆ เช่น การคำนวณราคาสุทธิ, การคิด VAT, ส่วนลด ในระบบ Payment |
+| API Testing (E2E) | Postman / Newman | ทดสอบการทำงานของ REST API ตั้งแต่ต้นจนจบ (End-to-End) เช่น Flow การสร้าง Order ไปจนถึงการชำระเงินสำเร็จ |
+| Security Testing | npm audit | ตรวจสอบหาช่องโหว่ด้านความปลอดภัย (Vulnerabilities) ของไลบรารีหรือแพ็กเกจ (Dependencies) ที่ใช้งานในโปรเจกต์ |
+| Smoke Testing | Manual | ทดสอบการทำงานของฟีเจอร์หลักเบื้องต้น (เช่น Login เข้าได้ไหม, หน้าเมนูโหลดขึ้นหรือไม่) เพื่อให้แน่ใจว่าระบบไม่พังและพร้อมสำหรับทดสอบขั้นต่อไป |
+| Staging Test | Docker Compose | จำลองสภาพแวดล้อมการทำงานให้ใกล้เคียง Production จริง (รวม Database และ Services ต่าง ๆ) เพื่อทดสอบการทำงานร่วมกันของระบบทั้งหมด |
 
 ---
 
@@ -97,15 +97,15 @@
 
 | รายการ | เวอร์ชัน / ค่า |
 |--------|---------------|
-| OS | |
-| Node.js | |
-| npm | |
-| Docker | |
+| OS | window |
+| Node.js | v24.14.0 |
+| npm | 11.9.0 |
+| Docker | 29.2.1, build a5c7197 |
 | PostgreSQL | 16 (Neon.tech) |
 | Browser | |
-| Newman | |
+| Newman | 6.2.2 |
 
----
+--- 
 
 ### 1.4 เงื่อนไขการผ่าน/ไม่ผ่านการทดสอบ (Entry / Exit Criteria)
 
