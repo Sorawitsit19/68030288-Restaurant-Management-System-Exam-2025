@@ -596,7 +596,7 @@ cd frontend && npm audit --audit-level=moderate
 
 ```bash
 # 1. Clone Repository
-git clone https://github.com/[รหัสนักศึกษา]/Restaurant-Management-System-Exam-2025.git
+git clone https://github.com/68030288-Restaurant-Management-System-Exam-2025.git
 cd Restaurant-Management-System-Exam-2025
 
 # 2. ตั้งค่า Environment Variables (Backend)
@@ -640,7 +640,7 @@ cd frontend && npm install && npm run dev
 
 **รูปที่ 8 — Backend Health Check (`/api/health` ตอบ `{"status":"ok"}`)**
 
-`![On-Premises Backend Health](./tests/reports/onprem-backend-health.png)`
+`![On-Premises Backend Health](tests/reports/smoke-1-health.png)`
 
 **รูปที่ 9 — Frontend Login สำเร็จ**
 
