@@ -498,7 +498,7 @@ cd frontend && npm audit --audit-level=moderate
 
 ### Security Scan ใน CI Pipeline (Rubric 1.7 ข้อ 4)
 
-**✏️ ยืนยันว่าได้เพิ่ม `npm audit --audit-level=high` ใน `.github/workflows/cicd.yml` แล้ว:** ☐ ใช่
+**✏️ ยืนยันว่าได้เพิ่ม `npm audit --audit-level=high` ใน `.github/workflows/cicd.yml` แล้ว:** ✅ ใช่
 
 **รูปที่ 7 — GitHub Actions แสดง npm audit step รันสำเร็จ**
 
