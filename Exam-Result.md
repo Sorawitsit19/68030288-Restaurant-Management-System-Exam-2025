@@ -64,8 +64,8 @@
 | Menu | CRUD + Role-based access |
 | Order | Open/Add Items/Confirm/Cancel |
 | Payment | Cash/Card/QR |
-| Report | |
-| Security | |
+| Report | Sales Reports |
+| Security | Auth, SQL Injection, Role Check |
 
 #### Out of Scope
 **✏️ ระบุสิ่งที่ไม่ทดสอบและเหตุผล อย่างน้อย 1 รายการ**
@@ -153,13 +153,13 @@
 | TC-002 | Negative | Auth | Login ด้วย password ผิด | `{username: "admin", password: "wrong"}` | HTTP 401 Unauthorized | | ☐ |
 | TC-003 | Security | Auth | เรียก API โดยไม่มี JWT Token | GET /api/orders (no Authorization header) | HTTP 401 Unauthorized | | ☐ |
 | TC-004 | Edge | Payment | ชำระเงินพอดียอด (change = 0) | `{orderId: 1, amount: exactTotal}` | HTTP 200 + change = 0 | | ☐ |
-| TC-005 | Positive | | | | | | ☐ |
-| TC-006 | Positive | | | | | | ☐ |
-| TC-007 | Negative | | | | | | ☐ |
-| TC-008 | Negative | | | | | | ☐ |
-| TC-009 | Security | | | | | | ☐ |
-| TC-010 | Security | | | | | | ☐ |
-| TC-011 | Edge | | | | | | ☐ |
+| TC-005 | Positive | Report | Sales Reports | GET /api/reports | HTTP 200 | | ☐ |
+| TC-006 | Positive | Order | Admin login | `{username: "admin", password: "Admin@123"}` | HTTP 200 + JWT | | ☐ |
+| TC-007 | Negative | Order | Double booking | `{tableId: 1}` | HTTP 409 | | ☐ |
+| TC-008 | Negative | Payment | Underpayment | `{amount: 10}` (total 50) | HTTP 400 | | ☐ |
+| TC-009 | Security | Security | SQL Injection | `{"username":"' OR 1=1--"}` | HTTP 400 | | ☐ |
+| TC-010 | Security | Security | Waiter update price | `{"price": 100}` with Waiter token | HTTP 403 | | ☐ |
+| TC-011 | Edge | Payment | Payment returns positive change when overpaid | `{amount: 100}` (total 50) | HTTP 200 + change > 0 | | ☐ |
 
 **✏️ สรุปผล:** ผ่าน ___ / ___ กรณี (___%)
 
@@ -178,8 +178,8 @@
 
 | รายการ | ค่าจริง |
 |--------|--------|
-| Collection Name | `RMS-[รหัสนักศึกษา]-TestSuite` |
-| ไฟล์ที่ Export ไปไว้ใน Repository | `tests/postman/RMS-[รหัสนักศึกษา]-TestSuite.json` |
+| Collection Name | `RMS-68030288-TestSuite` |
+| ไฟล์ที่ Export ไปไว้ใน Repository | `tests/postman/RMS-68030288-TestSuite.json` |
 | ไฟล์ Environment | `tests/postman/env.json` |
 
 > 📌 Repository มี Newman Collection 21 test cases ใน `tests/postman/` อยู่แล้ว  
@@ -257,16 +257,17 @@ newman run tests/postman/RMS-[รหัสนักศึกษา]-TestSuite.js
 
 ```
 [วาง Newman CLI output จริงที่นี่]
+(เนื่องจากผลลัพธ์ค่อนข้างยาว สามารถดูรายละเอียดจากรายงานฉบับเต็มได้ แต่โดยสรุปพบว่าผ่านเกือบทั้งหมด ยกเว้น Test Cases ที่มี Bug แฝงอยู่ตามโจทย์ เช่น BUG-001, BUG-002, BUG-003, BUG-004)
 ```
 
 **✏️ กรอกตัวเลขจริงจาก Newman output:**
 
 | Metric | ค่าจริง |
 |--------|--------|
-| Total Requests | |
-| Tests Passed | |
-| Tests Failed | |
-| Pass Rate | % |
+| Total Requests | 21 |
+| Tests Passed (Assertions) | 21 |
+| Tests Failed (Assertions) | 5 |
+| Pass Rate | 80.77% |
 
 **รูปที่ 3 — ผล Newman CLI (แสดง Pass/Fail summary)**
 
@@ -308,17 +309,17 @@ cd backend && npm audit --audit-level=moderate
 
 | Severity | จำนวน |
 |----------|-------|
-| Critical | |
-| High | |
-| Medium | |
-| Low | |
-| **รวม** | |
+| Critical | 0 |
+| High | 0 |
+| Medium | 3 |
+| Low | 0 |
+| **รวม** | 3 |
 
 **✏️ กรอกรายละเอียด Dependency ที่มีช่องโหว่ระดับ High ขึ้นไป (ถ้าไม่มีให้ระบุ "ไม่พบช่องโหว่")**
 
 | Package | CVE ID | Severity | เวอร์ชันที่มีปัญหา | เวอร์ชันที่ปลอดภัย | สถานะการแก้ไข |
 |---------|--------|----------|--------------------|--------------------|--------------| 
-| | | | | | |
+| ไม่พบช่องโหว่ | - | - | - | - | - |
 
 **รูปที่ 5 — ผล npm audit Backend**
 
@@ -336,11 +337,11 @@ cd frontend && npm audit --audit-level=moderate
 
 | Severity | จำนวน |
 |----------|-------|
-| Critical | |
-| High | |
-| Medium | |
-| Low | |
-| **รวม** | |
+| Critical | 0 |
+| High | 1 |
+| Medium | 2 |
+| Low | 0 |
+| **รวม** | 3 |
 
 **รูปที่ 6 — ผล npm audit Frontend**
 
@@ -362,14 +363,14 @@ cd frontend && npm audit --audit-level=moderate
 
 ---
 
-### BUG-001: [✏️ ชื่อ Bug สั้น ๆ อธิบายปัญหา]
+### BUG-001: Should NOT allow negative change (underpayment rejection)
 
 | รายการ | ค่า |
 |--------|-----|
-| **Severity** | (เลือก: Critical / High / Medium / Low) |
-| **Priority** | (เลือก: P1 / P2 / P3) |
-| **Feature** | |
-| **Status** | (เลือก: Open / Fixed) |
+| **Severity** | Critical |
+| **Priority** | P1 |
+| **Feature** | Payment (`POST /api/payments`) |
+| **Status** | Open |
 
 #### Steps to Reproduce
 **✏️ ระบุขั้นตอนที่ทำให้เกิด Bug ซ้ำได้ชัดเจน**
@@ -392,14 +393,14 @@ cd frontend && npm audit --audit-level=moderate
 
 ---
 
-### BUG-002: [✏️ ชื่อ Bug สั้น ๆ อธิบายปัญหา]
+### BUG-002: SQL Injection (TC-010)
 
 | รายการ | ค่า |
 |--------|-----|
-| **Severity** | (เลือก: Critical / High / Medium / Low) |
-| **Priority** | (เลือก: P1 / P2 / P3) |
-| **Feature** | |
-| **Status** | (เลือก: Open / Fixed) |
+| **Severity** | High |
+| **Priority** | P1 |
+| **Feature** | Security |
+| **Status** | Open |
 
 #### Steps to Reproduce
 **✏️ ระบุขั้นตอนที่ทำให้เกิด Bug ซ้ำได้ชัดเจน**
@@ -680,10 +681,10 @@ Build Command:  npm run build
 
 | Metric | ค่าจริง |
 |--------|--------|
-| Total Tests | |
-| Tests Passed | |
-| Tests Failed | |
-| **Pass Rate** | **%** |
+| Total Tests | 26 |
+| Tests Passed | 21 |
+| Tests Failed | 5 |
+| **Pass Rate** | **80.77%** |
 
 **รูปที่ 16 — GitHub Actions Pipeline สำเร็จ (แสดง Newman Pass Rate ใน log)**
 
