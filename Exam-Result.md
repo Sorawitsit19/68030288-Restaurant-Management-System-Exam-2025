@@ -226,7 +226,7 @@
 
 **รูปที่ 1 — Postman Collection และ Environment Variables (แสดง `base_url`, `token`, `admin_token` ครบ)**
 
-`![Postman Collection + Env Vars](tests/reports/image.png)`
+`![Postman Collection + Env Vars](tests/reports/tests/reports/Postman Collection และ Environment Variables.png)`
 
 **รูปที่ 2 — ผล Postman Collection Run (แสดง Pass/Fail ทุก Request)**
 
